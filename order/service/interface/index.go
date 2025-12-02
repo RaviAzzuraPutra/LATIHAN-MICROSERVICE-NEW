@@ -7,5 +7,5 @@ import (
 
 type OrderServiceInterface interface {
 	GetService() ([]model.Order, error)
-	CreateService(request *request.OrderRequest) error
+	CreateService(request *request.OrderRequest) (*model.Order, error)
 }

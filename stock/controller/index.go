@@ -30,7 +30,7 @@ func (c *StockControllerImpl) Create(ctx *gin.Context) {
 		return
 	}
 
-	errService := c.stockService.CreateService(stockRequest)
+	stock, errService := c.stockService.CreateService(stockRequest)
 
 	if errService != nil {
 		ctx.JSON(500, gin.H{
@@ -42,7 +42,7 @@ func (c *StockControllerImpl) Create(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{
 		"Message": "Berhasil Menambahkan Data",
-		"Data":    stockRequest,
+		"Data":    stock,
 	})
 
 }
@@ -54,7 +54,7 @@ func (g *StockControllerImpl) Get(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(404, gin.H{
 			"Message": "Data Kosong",
-			"Error":   err,
+			"Error":   err.Error(),
 		})
 		return
 	}
@@ -120,7 +120,7 @@ func (u *StockControllerImpl) Update(ctx *gin.Context) {
 		return
 	}
 
-	err := u.stockService.UpdateService(request, id)
+	stock, err := u.stockService.UpdateService(request, id)
 
 	if err != nil {
 		ctx.JSON(500, gin.H{
@@ -132,7 +132,7 @@ func (u *StockControllerImpl) Update(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{
 		"Message": "Berhasil Mengubah Data",
-		"Data":    request,
+		"Data":    stock,
 	})
 
 }

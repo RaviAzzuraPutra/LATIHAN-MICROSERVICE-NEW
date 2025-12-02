@@ -30,19 +30,19 @@ func (service *ServiceOrderImpl) GetService() ([]model.Order, error) {
 	}
 
 	if err != nil {
-		return nil, errors.New("TERJADI KESALAHAN SAAT MENGAMBIL DATA")
+		return nil, errors.New("TERJADI KESALAHAN SAAT MENGAMBIL DATA : " + err.Error())
 	}
 
 	return order, err
 }
 
-func (service *ServiceOrderImpl) CreateService(request *request.OrderRequest) error {
-	if request.ProductID == nil {
-		return errors.New("PRODUCT ID TIDAK BOLEH KOSONG")
+func (service *ServiceOrderImpl) CreateService(request *request.OrderRequest) (*model.Order, error) {
+	if request.ProductID == nil || *request.ProductID == "" {
+		return nil, errors.New("PRODUCT ID TIDAK BOLEH KOSONG")
 	}
 
-	if request.Quantity == nil {
-		return errors.New("QUANTITY TIDAK BOLEH KOSONG")
+	if request.Quantity == nil || *request.Quantity < 0 {
+		return nil, errors.New("QUANTITY TIDAK BOLEH KOSONG")
 	}
 
 	var order = &model.Order{
@@ -53,19 +53,16 @@ func (service *ServiceOrderImpl) CreateService(request *request.OrderRequest) er
 	err := service.Repo.CreateOrderRepository(order)
 
 	if err != nil {
-		return errors.New("TERJADI KESALAHAN SAAT MENAMBAHKAN DATA")
+		return nil, errors.New("TERJADI KESALAHAN SAAT MENAMBAHKAN DATA : " + err.Error())
 	}
 
-	if order.Id != nil {
-		ctx := context.Background()
+	ctx := context.Background()
 
-		errPublish := service.Publisher.PublishOrderCreated(ctx, *order.Id, *order.ProductID, *order.Quantity)
+	errPublish := service.Publisher.PublishOrderCreated(ctx, *order.Id, *order.ProductID, *order.Quantity)
 
-		if errPublish != nil {
-			fmt.Printf("Warning: Gagal kirim ke Kafka: %v\n", errPublish)
-		}
-		return errPublish
+	if errPublish != nil {
+		fmt.Printf("Warning: Gagal kirim ke Kafka: %v\n", errPublish)
 	}
 
-	return err
+	return order, err
 }
