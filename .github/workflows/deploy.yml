@@ -30,10 +30,13 @@ jobs:
       - name: Push Order Service
         run: docker push ${{ secrets.USERNAME }}/latihan_microservice_order_image:latest
 
-      - name: Run Docker Compose
-        run: |
-          ssh user@server-ip << 'EOF'
-            cd /home/app
-            docker-compose pull
-            docker-compose up -d
-          EOF
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Deploy Stock Service
+        run: kubectl apply -f k8s/stock-kubernetes.yml
+
+      - name: Deploy Order Service
+        run: kubectl apply -f k8s/order-kubernetes.yml
