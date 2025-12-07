@@ -43,7 +43,7 @@ func InitApp() {
 
 	app.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
-			"Message": "Aplikasi Berjalan Dengan Baik",
+			"Message": "Aplikasi Berjalan Dengan Baik!!!!!!!!!!",
 		})
 	})
 
