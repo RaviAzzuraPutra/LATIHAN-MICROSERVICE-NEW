@@ -1,7 +1,5 @@
 order/.env
-order/go.sum
 order/tmp
 stock/.env
-stock/go.sum
 stock/tmp
 .env
